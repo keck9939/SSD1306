@@ -35,60 +35,61 @@
 // @const List of init commands with arguments by Adafruit
 // @link https://github.com/adafruit/Adafruit_SSD1306
 const uint8_t INIT_SSD1306_ADAFRUIT[] PROGMEM = {
-  SSD1306_COMMAND_STREAM,
-  SSD1306_DISPLAY_OFF,                                         // 0xAE / Set Display OFF
-  SSD1306_SET_OSC_FREQ, 0x80,                                  // 0xD5 / 0x80 => D=1; DCLK = Fosc / D <=> DCLK = Fosc
-  SSD1306_SET_MUX_RATIO, 0x1F,                                 // 0xA8 / 0x3F (64MUX) for 128 x 64 version
-  //      / 0x1F (32MUX) for 128 x 32 version
-SSD1306_DISPLAY_OFFSET, 0x00,                                // 0xD3
-SSD1306_SET_START_LINE,                                     // 0x40
-SSD1306_SET_CHAR_REG,0x14,                                  // 0x8D / Enable charge pump during display on
-SSD1306_MEMORY_ADDR_MODE, 0x00,                              // 0x20 / Set Memory Addressing Mode
-// 0x00 / Horizontal Addressing Mode
-// 0x01 / Vertical Addressing Mode
-// 0x02 /  Page Addressing Mode (RESET)
-SSD1306_SEG_REMAP_OP,                                        // 0xA0 / remap 0xA1
-SSD1306_COM_SCAN_DIR_OP,                                     // 0xC8
-SSD1306_COM_PIN_CONF, 0x02,                                  // 0xDA / 0x12 - Disable COM Left/Right remap, Alternative COM pin configuration
-//        0x12 - for 128 x 64 version
-//        0x02 - for 128 x 32 version
-SSD1306_SET_CONTRAST, 0x8F,                                  // 0x81 / 0x8F - reset value (max 0xFF)
-SSD1306_SET_PRECHARGE, 0xc2,                                 // 0xD9 / higher value less blinking
-//        0xC2, 1st phase = 2 DCLK,  2nd phase = 13 DCLK
-SSD1306_VCOM_DESELECT, 0x40,                                 // 0xDB / Set V COMH Deselect, reset value 0x22 = 0,77xUcc
-SSD1306_DIS_ENT_DISP_ON,                                    // 0xA4
-SSD1306_DIS_NORMAL,                                        // 0xA6
-SSD1306_DEACT_SCROLL,                                       // 0x2E
-SSD1306_DISPLAY_ON                                          // 0xAF / Set Display ON  
+	SSD1306_COMMAND_STREAM,
+	SSD1306_DISPLAY_OFF,                                         // 0xAE / Set Display OFF
+	SSD1306_SET_OSC_FREQ, 0x80,                                  // 0xD5 / 0x80 => D=1; DCLK = Fosc / D <=> DCLK = Fosc
+	SSD1306_SET_MUX_RATIO, 0x1F,                                 // 0xA8 / 0x3F (64MUX) for 128 x 64 version
+	  //      / 0x1F (32MUX) for 128 x 32 version
+	SSD1306_DISPLAY_OFFSET, 0x00,                                // 0xD3
+	SSD1306_SET_START_LINE,                                     // 0x40
+	SSD1306_SET_CHAR_REG,0x14,                                  // 0x8D / Enable charge pump during display on
+	SSD1306_MEMORY_ADDR_MODE, 0x00,                              // 0x20 / Set Memory Addressing Mode
+	// 0x00 / Horizontal Addressing Mode
+	// 0x01 / Vertical Addressing Mode
+	// 0x02 /  Page Addressing Mode (RESET)
+	SSD1306_SEG_REMAP_OP,                                        // 0xA0 / remap 0xA1
+	SSD1306_COM_SCAN_DIR_OP,                                     // 0xC8
+	SSD1306_COM_PIN_CONF, 0x02,                                  // 0xDA / 0x12 - Disable COM Left/Right remap, Alternative COM pin configuration
+	//        0x12 - for 128 x 64 version
+	//        0x02 - for 128 x 32 version
+	SSD1306_SET_CONTRAST, 0x8F,                                  // 0x81 / 0x8F - reset value (max 0xFF)
+	SSD1306_SET_PRECHARGE, 0xc2,                                 // 0xD9 / higher value less blinking
+	//        0xC2, 1st phase = 2 DCLK,  2nd phase = 13 DCLK
+	SSD1306_VCOM_DESELECT, 0x40,                                 // 0xDB / Set V COMH Deselect, reset value 0x22 = 0,77xUcc
+	SSD1306_DIS_ENT_DISP_ON,                                    // 0xA4
+	SSD1306_DIS_NORMAL,                                        // 0xA6
+	SSD1306_DEACT_SCROLL,                                       // 0x2E
+	SSD1306_DISPLAY_ON                                          // 0xAF / Set Display ON  
 };
 
 // @const uint8_t - List of init commands according to datasheet SSD1306
 const uint8_t INIT_SSD1306[] PROGMEM = {
-  SSD1306_COMMAND_STREAM,
-  SSD1306_DISPLAY_OFF,									// 0xAE = Set Display OFF
-  SSD1306_SET_MUX_RATIO, 0x1F,							// 0xA8 - 0x3F for 128 x 64 version (64MUX)
-  //      - 0x1F for 128 x 32 version (32MUX)
-  SSD1306_MEMORY_ADDR_MODE, 0x00,							// 0x20 = Set Memory Addressing Mode
-  // 0x00 - Horizontal Addressing Mode
-  // 0x01 - Vertical Addressing Mode
-  // 0x02 - Page Addressing Mode (RESET)
-  SSD1306_SET_START_LINE,									// 0x40
-  SSD1306_DISPLAY_OFFSET, 0x00,							// 0xD3
-  SSD1306_SEG_REMAP_OP,									// 0xA0 / remap 0xA1
-  SSD1306_COM_SCAN_DIR_OP,								// 0xC0 / remap 0xC8
-  SSD1306_COM_PIN_CONF, 0x02,								// 0xDA, 0x12 - Disable COM Left/Right remap, Alternative COM pin configuration
-  //       0x12 - for 128 x 64 version
-  //       0x02 - for 128 x 32 version
-  SSD1306_SET_CONTRAST, 0x7F,								// 0x81, 0x7F - reset value (max 0xFF)
-  SSD1306_DIS_ENT_DISP_ON,								// 0xA4
-  SSD1306_DIS_NORMAL,										// 0xA6
-  SSD1306_SET_OSC_FREQ, 0x80,								// 0xD5, 0x80 => D=1; DCLK = Fosc / D <=> DCLK = Fosc
-  SSD1306_SET_PRECHARGE, 0xc2,							// 0xD9, higher value less blinking
-  // 0xC2, 1st phase = 2 DCLK,  2nd phase = 13 DCLK
-  SSD1306_VCOM_DESELECT, 0x20,							// Set V COMH Deselect, reset value 0x22 = 0,77xUcc
-  SSD1306_SET_CHAR_REG, 0x14,								// 0x8D, Enable charge pump during display on
-  SSD1306_DEACT_SCROLL,									// 0x2E
-  SSD1306_DISPLAY_ON										// 0xAF = Set Display ON
+	SSD1306_COMMAND_STREAM,
+	SSD1306_DISPLAY_OFF,									// 0xAE = Set Display OFF
+	SSD1306_SET_MUX_RATIO, 0x1F,							// 0xA8 - 0x3F for 128 x 64 version (64MUX)
+	//      - 0x1F for 128 x 32 version (32MUX)
+	SSD1306_MEMORY_ADDR_MODE, 0x00,							// 0x20 = Set Memory Addressing Mode
+	// 0x00 - Horizontal Addressing Mode
+	// 0x01 - Vertical Addressing Mode
+	// 0x02 - Page Addressing Mode (RESET)
+	SSD1306_SET_PAGE_ADDR, 0, 3,
+	SSD1306_SET_START_LINE,									// 0x40
+	SSD1306_DISPLAY_OFFSET, 0x00,							// 0xD3
+	SSD1306_SEG_REMAP_OP,									// 0xA0 / remap 0xA1
+	SSD1306_COM_SCAN_DIR_OP,								// 0xC0 / remap 0xC8
+	SSD1306_COM_PIN_CONF, 0x02,								// 0xDA, 0x12 - Disable COM Left/Right remap, Alternative COM pin configuration
+	//       0x12 - for 128 x 64 version
+	//       0x02 - for 128 x 32 version
+	SSD1306_SET_CONTRAST, 0x7F,								// 0x81, 0x7F - reset value (max 0xFF)
+	SSD1306_DIS_ENT_DISP_ON,								// 0xA4
+	SSD1306_DIS_NORMAL,										// 0xA6
+	SSD1306_SET_OSC_FREQ, 0x80,								// 0xD5, 0x80 => D=1; DCLK = Fosc / D <=> DCLK = Fosc
+	SSD1306_SET_PRECHARGE, 0xc2,							// 0xD9, higher value less blinking
+	// 0xC2, 1st phase = 2 DCLK,  2nd phase = 13 DCLK
+	SSD1306_VCOM_DESELECT, 0x20,							// Set V COMH Deselect, reset value 0x22 = 0,77xUcc
+	SSD1306_SET_CHAR_REG, 0x14,								// 0x8D, Enable charge pump during display on
+	SSD1306_DEACT_SCROLL,									// 0x2E
+	SSD1306_DISPLAY_ON										// 0xAF = Set Display ON
 };
 
 // @var array Chache memory Lcd 8 * 128 = 1024
@@ -169,7 +170,7 @@ STAT SSD1306_NormalScreen(uint8_t address)
  */
 STAT SSD1306_InverseScreen(uint8_t address)
 {
-	return SSD1306_Send_Command(address, SSD1306_DIS_NORMAL);
+	return SSD1306_Send_Command(address, SSD1306_DIS_INVERSE);
 }
 
 /**
@@ -233,6 +234,12 @@ STAT SSD1306_UpdatePosition(void)
 	}
 
 	return ST_OK;
+}
+
+void SSD1306_ScrollLine()
+{
+	memcpy(cacheMemLcd, &cacheMemLcd[128], CACHE_SIZE_MEM - 128);
+	memset(&cacheMemLcd[CACHE_SIZE_MEM - 129], 0, 128);
 }
 
 /**

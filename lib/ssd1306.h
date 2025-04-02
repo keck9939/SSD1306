@@ -166,6 +166,8 @@ STAT SSD1306_InverseScreen(uint8_t);
  */
 STAT SSD1306_UpdateScreen(uint8_t);
 
+void SSD1306_ScrollLine();
+
 /**
  * @brief   SSD1306 Update text position
  *
