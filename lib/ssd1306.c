@@ -25,7 +25,10 @@
 #include "ssd1306.h"
 #include "i2c_interface.h"
 
+#ifdef _WIN32
 #define PROGMEM
+#endif
+
 
 // @const List of init commands with arguments by Adafruit
 // @link https://github.com/adafruit/Adafruit_SSD1306
@@ -87,7 +90,7 @@ const uint8_t INIT_SSD1306[] PROGMEM = {
   };
 
 // @var array Chache memory Lcd 8 * 128 = 1024
-static char gbuffer[CACHE_SIZE_MEM];
+static char gbuffer[CACHE_SIZE_MEM+1];
 static char* const cacheMemLcd = gbuffer + 1;
 
 /**
@@ -108,8 +111,7 @@ STAT SSD1306_Init (uint8_t address)
   STAT status;                                   // init status
   //uint8_t commands = pgm_read_byte (list++);
 
-  // TWI: Init
-  // -------------------------------------------------------------------------------------
+  gbuffer[0] = SSD1306_DATA_STREAM;
   status = i2c_init();
   if (status != ST_OK) return status;
 
