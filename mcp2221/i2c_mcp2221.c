@@ -65,7 +65,7 @@ STAT i2c_deinit()
  *            - 1 write failed
  * @note      none
  */
-STAT i2c_write(uint8_t addr, uint8_t* buf, uint16_t len)
+STAT i2c_write(uint8_t addr, uint8_t* buf, unsigned len)
 {
     int result = 1;
     result = Mcp2221_I2cWrite(mcpHandle, len, addr, use7bitAddress, buf);
