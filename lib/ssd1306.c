@@ -20,13 +20,15 @@
  * --------------------------------------------------------------------------------------+
  * @usage       Basic Setup for OLED Display
  */
- 
-// @includes
+
+ // @includes
 #include "ssd1306.h"
 #include "i2c_interface.h"
 
 #ifdef _WIN32
 #define PROGMEM
+#else
+#include <avr/pgmspace.h>
 #endif
 
 
@@ -37,28 +39,28 @@ const uint8_t INIT_SSD1306_ADAFRUIT[] PROGMEM = {
   SSD1306_DISPLAY_OFF,                                         // 0xAE / Set Display OFF
   SSD1306_SET_OSC_FREQ, 0x80,                                  // 0xD5 / 0x80 => D=1; DCLK = Fosc / D <=> DCLK = Fosc
   SSD1306_SET_MUX_RATIO, 0x1F,                                 // 0xA8 / 0x3F (64MUX) for 128 x 64 version
-    //      / 0x1F (32MUX) for 128 x 32 version
-  SSD1306_DISPLAY_OFFSET, 0x00,                                // 0xD3
-  SSD1306_SET_START_LINE,                                     // 0x40
-  SSD1306_SET_CHAR_REG,0x14,                                  // 0x8D / Enable charge pump during display on
-  SSD1306_MEMORY_ADDR_MODE, 0x00,                              // 0x20 / Set Memory Addressing Mode
-  // 0x00 / Horizontal Addressing Mode
-  // 0x01 / Vertical Addressing Mode
-  // 0x02 /  Page Addressing Mode (RESET)
-  SSD1306_SEG_REMAP_OP,                                        // 0xA0 / remap 0xA1
-  SSD1306_COM_SCAN_DIR_OP,                                     // 0xC8
-  SSD1306_COM_PIN_CONF, 0x02,                                  // 0xDA / 0x12 - Disable COM Left/Right remap, Alternative COM pin configuration
-  //        0x12 - for 128 x 64 version
-  //        0x02 - for 128 x 32 version
-  SSD1306_SET_CONTRAST, 0x8F,                                  // 0x81 / 0x8F - reset value (max 0xFF)
-  SSD1306_SET_PRECHARGE, 0xc2,                                 // 0xD9 / higher value less blinking
-  //        0xC2, 1st phase = 2 DCLK,  2nd phase = 13 DCLK
-  SSD1306_VCOM_DESELECT, 0x40,                                 // 0xDB / Set V COMH Deselect, reset value 0x22 = 0,77xUcc
-  SSD1306_DIS_ENT_DISP_ON,                                    // 0xA4
-  SSD1306_DIS_NORMAL,                                        // 0xA6
-  SSD1306_DEACT_SCROLL,                                       // 0x2E
-  SSD1306_DISPLAY_ON                                          // 0xAF / Set Display ON  
-  };
+  //      / 0x1F (32MUX) for 128 x 32 version
+SSD1306_DISPLAY_OFFSET, 0x00,                                // 0xD3
+SSD1306_SET_START_LINE,                                     // 0x40
+SSD1306_SET_CHAR_REG,0x14,                                  // 0x8D / Enable charge pump during display on
+SSD1306_MEMORY_ADDR_MODE, 0x00,                              // 0x20 / Set Memory Addressing Mode
+// 0x00 / Horizontal Addressing Mode
+// 0x01 / Vertical Addressing Mode
+// 0x02 /  Page Addressing Mode (RESET)
+SSD1306_SEG_REMAP_OP,                                        // 0xA0 / remap 0xA1
+SSD1306_COM_SCAN_DIR_OP,                                     // 0xC8
+SSD1306_COM_PIN_CONF, 0x02,                                  // 0xDA / 0x12 - Disable COM Left/Right remap, Alternative COM pin configuration
+//        0x12 - for 128 x 64 version
+//        0x02 - for 128 x 32 version
+SSD1306_SET_CONTRAST, 0x8F,                                  // 0x81 / 0x8F - reset value (max 0xFF)
+SSD1306_SET_PRECHARGE, 0xc2,                                 // 0xD9 / higher value less blinking
+//        0xC2, 1st phase = 2 DCLK,  2nd phase = 13 DCLK
+SSD1306_VCOM_DESELECT, 0x40,                                 // 0xDB / Set V COMH Deselect, reset value 0x22 = 0,77xUcc
+SSD1306_DIS_ENT_DISP_ON,                                    // 0xA4
+SSD1306_DIS_NORMAL,                                        // 0xA6
+SSD1306_DEACT_SCROLL,                                       // 0x2E
+SSD1306_DISPLAY_ON                                          // 0xAF / Set Display ON  
+};
 
 // @const uint8_t - List of init commands according to datasheet SSD1306
 const uint8_t INIT_SSD1306[] PROGMEM = {
@@ -87,10 +89,10 @@ const uint8_t INIT_SSD1306[] PROGMEM = {
   SSD1306_SET_CHAR_REG, 0x14,								// 0x8D, Enable charge pump during display on
   SSD1306_DEACT_SCROLL,									// 0x2E
   SSD1306_DISPLAY_ON										// 0xAF = Set Display ON
-  };
+};
 
 // @var array Chache memory Lcd 8 * 128 = 1024
-static char gbuffer[CACHE_SIZE_MEM+1];
+static char gbuffer[CACHE_SIZE_MEM + 1];
 static char* const cacheMemLcd = gbuffer + 1;
 
 /**
@@ -99,27 +101,33 @@ static char* const cacheMemLcd = gbuffer + 1;
  * +------------------------------------------------------------------------------------+
  */
 
-/**
- * @brief   SSD1306 Init
- *
- * @param   uint8_t address
- *
- * @return  uint8_t
- */
-STAT SSD1306_Init (uint8_t address)
-{ 
-  STAT status;                                   // init status
-  //uint8_t commands = pgm_read_byte (list++);
+ /**
+  * @brief   SSD1306 Init
+  *
+  * @param   uint8_t address
+  *
+  * @return  uint8_t
+  */
+STAT SSD1306_Init(uint8_t address)
+{
+	STAT status;                                   // init status
 
-  gbuffer[0] = SSD1306_DATA_STREAM;
-  status = i2c_init();
-  if (status != ST_OK) return status;
+	status = i2c_init();
+	if (status != ST_OK) return status;
 
-  status = i2c_write(address, INIT_SSD1306, sizeof(INIT_SSD1306));
-  return status;
-  }
+#ifdef _WIN32
+	status = i2c_write(address, INIT_SSD1306, sizeof(INIT_SSD1306));
+#else
+	for (int i = 0; i < sizeof(INIT_SSD1306))
+		gbuffer[i] = pgm_read_byte(&INIT_SSD1306[i]);
+	status = i2c_write(address, gbuffer, sizeof(INIT_SSD1306));
+#endif
+	gbuffer[0] = SSD1306_DATA_STREAM;
 
- 
+	return status;
+}
+
+
 /**
  * @brief   SSD1306 Send command
  *
@@ -127,12 +135,12 @@ STAT SSD1306_Init (uint8_t address)
  *
  * @return  uint8_t
  */
-STAT SSD1306_Send_Command (uint8_t address, uint8_t command)
+STAT SSD1306_Send_Command(uint8_t address, uint8_t command)
 {
-  uint8_t buf[2] = {SSD1306_COMMAND, command };
+	uint8_t buf[2] = { SSD1306_COMMAND, command };
 
-  return i2c_write(address, buf, 2);
-  }
+	return i2c_write(address, buf, 2);
+}
 
 /**
  * +------------------------------------------------------------------------------------+
@@ -140,16 +148,16 @@ STAT SSD1306_Send_Command (uint8_t address, uint8_t command)
  * +------------------------------------------------------------------------------------+
  */
 
-/**
- * @brief   SSD1306 Normal colors
- *
- * @param   uint8_t address
- *
- * @return  uint8_t
- */
-STAT SSD1306_NormalScreen (uint8_t address)
+ /**
+  * @brief   SSD1306 Normal colors
+  *
+  * @param   uint8_t address
+  *
+  * @return  uint8_t
+  */
+STAT SSD1306_NormalScreen(uint8_t address)
 {
-  return SSD1306_Send_Command (address, SSD1306_DIS_NORMAL);
+	return SSD1306_Send_Command(address, SSD1306_DIS_NORMAL);
 }
 
 /**
@@ -159,9 +167,9 @@ STAT SSD1306_NormalScreen (uint8_t address)
  *
  * @return  uint8_t
  */
-STAT SSD1306_InverseScreen (uint8_t address)
+STAT SSD1306_InverseScreen(uint8_t address)
 {
-  return SSD1306_Send_Command (address, SSD1306_DIS_NORMAL);
+	return SSD1306_Send_Command(address, SSD1306_DIS_NORMAL);
 }
 
 /**
@@ -171,9 +179,9 @@ STAT SSD1306_InverseScreen (uint8_t address)
  *
  * @return  uint8_t
  */
-STAT SSD1306_UpdateScreen (uint8_t address)
+STAT SSD1306_UpdateScreen(uint8_t address)
 {
-   return i2c_write(address, gbuffer, sizeof(gbuffer));
+	return i2c_write(address, gbuffer, sizeof(gbuffer));
 }
 
 /**
@@ -183,47 +191,48 @@ STAT SSD1306_UpdateScreen (uint8_t address)
  *
  * @return  void
  */
-void SSD1306_ClearScreen (void)
+void SSD1306_ClearScreen(void)
 {
-  memset (cacheMemLcd, 0x00, CACHE_SIZE_MEM);                     // null cache memory lcd
+	memset(cacheMemLcd, 0x00, CACHE_SIZE_MEM);                     // null cache memory lcd
 }
 
 /**
  * @brief   SSD1306 Set position
  *
- * @param   uint8_t column -> 0 ... 127 
- * @param   uint8_t page -> 0 ... 7 or 3 
+ * @param   uint8_t column -> 0 ... 127
+ * @param   uint8_t page -> 0 ... 7 or 3
  *
  * @return  void
  */
-void SSD1306_SetPosition (uint8_t x, uint8_t y) 
+void SSD1306_SetPosition(uint8_t x, uint8_t y)
 {
-  _counter = x + (y << 7);                                        // update counter
+	_counter = x + (y << 7);                                        // update counter
 }
 
 /**
- * @brief   SSD1306 Update text poisition - this ensure that character will not be divided at the end of row, 
+ * @brief   SSD1306 Update text poisition - this ensure that character will not be divided at the end of row,
  *          the whole character will be depicted on the new row
  *
  * @param   void
  *
  * @return  uint8_t
  */
-STAT SSD1306_UpdatePosition (void)
+STAT SSD1306_UpdatePosition(void)
 {
-  uint8_t y = _counter >> 7;                                      // y / 8
-  uint8_t x = _counter - (y << 7);                                // y % 8
-  uint8_t x_new = x + CHARS_COLS_LENGTH + 1;                      // x + character length + 1
-  
-  if (x_new > END_COLUMN_ADDR) {                                  // check position
-    if (y > END_PAGE_ADDR) {                                      // if more than allowable number of pages
-      return ST_FAIL;                                       // return out of range
-    } else if (y < (END_PAGE_ADDR-1)) {                           // if x reach the end but page in range
-      _counter = ((++y) << 7);                                    // update
-    }
-  }
- 
-  return ST_OK;
+	uint8_t y = _counter >> 7;                                      // y / 8
+	uint8_t x = _counter - (y << 7);                                // y % 8
+	uint8_t x_new = x + CHARS_COLS_LENGTH + 1;                      // x + character length + 1
+
+	if (x_new > END_COLUMN_ADDR) {                                  // check position
+		if (y > END_PAGE_ADDR) {                                      // if more than allowable number of pages
+			return ST_FAIL;                                       // return out of range
+		}
+		else if (y < (END_PAGE_ADDR - 1)) {                           // if x reach the end but page in range
+			_counter = ((++y) << 7);                                    // update
+		}
+	}
+
+	return ST_OK;
 }
 
 /**
@@ -233,26 +242,26 @@ STAT SSD1306_UpdatePosition (void)
  *
  * @return  uint8_t
  */
-STAT SSD1306_DrawChar (char character)
+STAT SSD1306_DrawChar(char character)
 {
-  uint8_t i = 0;
+	uint8_t i = 0;
 
-  if (SSD1306_UpdatePosition() == ST_FAIL) {
-    return ST_FAIL;
-  }
-  
+	if (SSD1306_UpdatePosition() == ST_FAIL) {
+		return ST_FAIL;
+	}
+
 #ifndef _WIN32
-  while (i < CHARS_COLS_LENGTH) {
-    cacheMemLcd[_counter++] = pgm_read_byte(&FONTS[character-32][i++]);
-  }
+	while (i < CHARS_COLS_LENGTH) {
+		cacheMemLcd[_counter++] = pgm_read_byte(&FONTS[character - 32][i++]);
+	}
 #else
-  while (i < CHARS_COLS_LENGTH) {
-      cacheMemLcd[_counter++] = FONTS[character - 32][i++];
-  }
+	while (i < CHARS_COLS_LENGTH) {
+		cacheMemLcd[_counter++] = FONTS[character - 32][i++];
+	}
 #endif
-  _counter++;
+	_counter++;
 
-  return ST_OK;
+	return ST_OK;
 }
 
 /**
@@ -262,12 +271,12 @@ STAT SSD1306_DrawChar (char character)
  *
  * @return  void
  */
-void SSD1306_DrawString (char *str)
+void SSD1306_DrawString(char* str)
 {
-  int i = 0;
-  while (str[i] != '\0') {
-    SSD1306_DrawChar (str[i++]);
-  }
+	int i = 0;
+	while (str[i] != '\0') {
+		SSD1306_DrawChar(str[i++]);
+	}
 }
 
 /**
@@ -278,80 +287,81 @@ void SSD1306_DrawString (char *str)
  *
  * @return  uint8_t
  */
-STAT SSD1306_DrawPixel (uint8_t x, uint8_t y)
+STAT SSD1306_DrawPixel(uint8_t x, uint8_t y)
 {
-  uint8_t page = 0;
-  uint8_t pixel = 0;
-  
-  if ((x > MAX_X) || (y > MAX_Y)) {                               // if out of range
-    return ST_FAIL;                                         // out of range
-  }
-  page = y >> 3;                                                  // find page (y / 8)
-  pixel = 1 << (y - (page << 3));                                 // which pixel (y % 8)
-  _counter = x + (page << 7);                                     // update counter
-  cacheMemLcd[_counter++] |= pixel;                               // save pixel
+	uint8_t page = 0;
+	uint8_t pixel = 0;
 
-  return ST_OK;
+	if ((x > MAX_X) || (y > MAX_Y)) {                               // if out of range
+		return ST_FAIL;                                         // out of range
+	}
+	page = y >> 3;                                                  // find page (y / 8)
+	pixel = 1 << (y - (page << 3));                                 // which pixel (y % 8)
+	_counter = x + (page << 7);                                     // update counter
+	cacheMemLcd[_counter++] |= pixel;                               // save pixel
+
+	return ST_OK;
 }
 
 /**
  * @brief   Draw line by Bresenham algoritm
- *  
+ *
  * @param   uint8_t x start position / 0 <= cols <= MAX_X-1
  * @param   uint8_t x end position   / 0 <= cols <= MAX_X-1
- * @param   uint8_t y start position / 0 <= rows <= MAX_Y-1 
+ * @param   uint8_t y start position / 0 <= rows <= MAX_Y-1
  * @param   uint8_t y end position   / 0 <= rows <= MAX_Y-1
  *
  * @return  uint8_t
  */
-STAT SSD1306_DrawLine (uint8_t x1, uint8_t x2, uint8_t y1, uint8_t y2)
+STAT SSD1306_DrawLine(uint8_t x1, uint8_t x2, uint8_t y1, uint8_t y2)
 {
-  int16_t D;                                                      // determinant
-  int16_t delta_x, delta_y;                                       // deltas
-  int16_t trace_x = 1, trace_y = 1;                               // steps
+	int16_t D;                                                      // determinant
+	int16_t delta_x, delta_y;                                       // deltas
+	int16_t trace_x = 1, trace_y = 1;                               // steps
 
-  delta_x = x2 - x1;                                              // delta x
-  delta_y = y2 - y1;                                              // delta y
-  
-  if (delta_x < 0) {                                              // check if x2 > x1
-    delta_x = -delta_x;                                           // negate delta x
-    trace_x = -trace_x;                                           // negate step x
-  }
-  
-  if (delta_y < 0) {                                              // check if y2 > y1
-    delta_y = -delta_y;                                           // negate detla y
-    trace_y = -trace_y;                                           // negate step y
-  }
+	delta_x = x2 - x1;                                              // delta x
+	delta_y = y2 - y1;                                              // delta y
 
-  // Bresenham condition for m < 1 (dy < dx)
-  // -------------------------------------------------------------------------------------
-  if (delta_y < delta_x) {
-    D = (delta_y << 1) - delta_x;                                 // calculate determinant
-    SSD1306_DrawPixel (x1, y1);                                   // draw first pixel
-    while (x1 != x2) {                                            // check if x1 equal x2
-      x1 += trace_x;                                              // update x1
-      if (D >= 0) {                                               // check if determinant is positive
-        y1 += trace_y;                                            // update y1
-        D -= 2*delta_x;                                           // update determinant
-      }
-      D += 2*delta_y;                                             // update deteminant
-      SSD1306_DrawPixel (x1, y1);                                 // draw next pixel
-    }
-  // for m > 1 (dy > dx)    
-  // -------------------------------------------------------------------------------------
-  } else {
-    D = delta_y - (delta_x << 1);                                 // calculate determinant
-    SSD1306_DrawPixel (x1, y1);                                   // draw first pixel
-    while (y1 != y2) {                                            // check if y2 equal y1
-      y1 += trace_y;                                              // update y1
-      if (D <= 0) {                                               // check if determinant is positive
-        x1 += trace_x;                                            // update y1
-        D += 2*delta_y;                                           // update determinant
-      }
-      D -= 2*delta_x;                                             // update deteminant
-      SSD1306_DrawPixel (x1, y1);                                 // draw next pixel
-    }
-  }
+	if (delta_x < 0) {                                              // check if x2 > x1
+		delta_x = -delta_x;                                           // negate delta x
+		trace_x = -trace_x;                                           // negate step x
+	}
 
-  return ST_OK;
+	if (delta_y < 0) {                                              // check if y2 > y1
+		delta_y = -delta_y;                                           // negate detla y
+		trace_y = -trace_y;                                           // negate step y
+	}
+
+	// Bresenham condition for m < 1 (dy < dx)
+	// -------------------------------------------------------------------------------------
+	if (delta_y < delta_x) {
+		D = (delta_y << 1) - delta_x;                                 // calculate determinant
+		SSD1306_DrawPixel(x1, y1);                                   // draw first pixel
+		while (x1 != x2) {                                            // check if x1 equal x2
+			x1 += trace_x;                                              // update x1
+			if (D >= 0) {                                               // check if determinant is positive
+				y1 += trace_y;                                            // update y1
+				D -= 2 * delta_x;                                           // update determinant
+			}
+			D += 2 * delta_y;                                             // update deteminant
+			SSD1306_DrawPixel(x1, y1);                                 // draw next pixel
+		}
+		// for m > 1 (dy > dx)    
+		// -------------------------------------------------------------------------------------
+	}
+	else {
+		D = delta_y - (delta_x << 1);                                 // calculate determinant
+		SSD1306_DrawPixel(x1, y1);                                   // draw first pixel
+		while (y1 != y2) {                                            // check if y2 equal y1
+			y1 += trace_y;                                              // update y1
+			if (D <= 0) {                                               // check if determinant is positive
+				x1 += trace_x;                                            // update y1
+				D += 2 * delta_y;                                           // update determinant
+			}
+			D -= 2 * delta_x;                                             // update deteminant
+			SSD1306_DrawPixel(x1, y1);                                 // draw next pixel
+		}
+	}
+
+	return ST_OK;
 }
