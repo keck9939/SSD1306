@@ -97,9 +97,6 @@
 #define MAX_X                     END_COLUMN_ADDR
 #define MAX_Y                     (END_PAGE_ADDR + 1) * 8
 
-// @var set area
-unsigned int _counter;
-
 /**
  * --------------------------------------------------------------------------------------------+
  * PRIVATE FUNCTIONS

@@ -25,7 +25,7 @@
 
 #include <stdint.h>
 
-#ifdef _WIN32
+#if defined _WIN32 || defined STM32G431xx
 #define PROGMEM
 #else
  // includes

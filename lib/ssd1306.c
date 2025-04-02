@@ -25,7 +25,7 @@
 #include "ssd1306.h"
 #include "i2c_interface.h"
 
-#ifdef _WIN32
+#if defined _WIN32 || defined STM32G431xx
 #define PROGMEM
 #else
 #include <avr/pgmspace.h>
@@ -93,8 +93,9 @@ const uint8_t INIT_SSD1306[] PROGMEM = {
 };
 
 // @var array Chache memory Lcd 8 * 128 = 1024
-static char gbuffer[CACHE_SIZE_MEM + 1];
-static char* const cacheMemLcd = gbuffer + 1;
+static uint8_t gbuffer[CACHE_SIZE_MEM + 1];
+static uint8_t* const cacheMemLcd = gbuffer + 1;
+static unsigned int _counter;
 
 /**
  * +------------------------------------------------------------------------------------+
@@ -116,7 +117,7 @@ STAT SSD1306_Init(uint8_t address)
 	status = i2c_init();
 	if (status != ST_OK) return status;
 
-#ifdef _WIN32
+#if defined _WIN32 || defined STM32G431xx
 	status = i2c_write(address, INIT_SSD1306, sizeof(INIT_SSD1306));
 #else
 	for (int i = 0; i < sizeof(INIT_SSD1306))
@@ -257,14 +258,15 @@ STAT SSD1306_DrawChar(char character)
 		return ST_FAIL;
 	}
 
-#ifndef _WIN32
-	while (i < CHARS_COLS_LENGTH) {
-		cacheMemLcd[_counter++] = pgm_read_byte(&FONTS[character - 32][i++]);
-	}
-#else
+#if defined _WIN32 || defined STM32G431xx
 	while (i < CHARS_COLS_LENGTH) {
 		cacheMemLcd[_counter++] = FONTS[character - 32][i++];
 	}
+#else
+	while (i < CHARS_COLS_LENGTH) {
+		cacheMemLcd[_counter++] = pgm_read_byte(&FONTS[character - 32][i++]);
+	}
+
 #endif
 	_counter++;
 
