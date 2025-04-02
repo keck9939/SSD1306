@@ -23,8 +23,14 @@
 #ifndef __FONT_H__
 #define __FONT_H__
 
-  // includes
+#include <stdint.h>
+
+#ifdef _WIN32
+#define PROGMEM
+#else
+ // includes
   #include <avr/pgmspace.h>
+#endif
 
   // Characters definition
   // -----------------------------------

@@ -26,13 +26,9 @@
   // @includes
   #include <string.h>                     // memset function
   #include "font.h"
-  #include "twi.h"
+#include "i2c_interface.h"
 
-  // Success / Error
-  // ------------------------------------------------------------------------------------
-  #define SSD1306_SUCCESS           0
-  #define SSD1306_ERROR             1
-
+  
   // Address definition
   // ------------------------------------------------------------------------------------
   #define SSD1306_ADDR              0x3C
@@ -117,25 +113,16 @@
    *
    * @return  uint8_t
    */
-  uint8_t SSD1306_Init (uint8_t);
+  STAT SSD1306_Init(uint8_t addr);
 
-  /**
-   * @brief   SSD1306 Send Start and SLAW request
-   *
-   * @param   uint8_t
-   *
-   * @return  uint8_t
-   */
-  uint8_t SSD1306_Send_StartAndSLAW (uint8_t);
-
-  /**
+    /**
    * @brief   SSD1306 Send command
    *
    * @param   uint8_t
    *
    * @return  uint8_t
    */
-  uint8_t SSD1306_Send_Command (uint8_t);
+  STAT SSD1306_Send_Command(uint8_t addr, uint8_t command);
   
   /**
    * +------------------------------------------------------------------------------------+
@@ -159,7 +146,7 @@
    *
    * @return  uint8_t
    */
-  uint8_t SSD1306_NormalScreen (uint8_t);
+  STAT SSD1306_NormalScreen (uint8_t);
 
   /**
    * @brief   SSD1306 Inverse colors
@@ -168,7 +155,7 @@
    *
    * @return  uint8_t
    */
-  uint8_t SSD1306_InverseScreen (uint8_t);
+  STAT SSD1306_InverseScreen (uint8_t);
 
   /**
    * @brief   SSD1306 Update screen
@@ -177,7 +164,7 @@
    *
    * @return  uint8_t
    */
-  uint8_t SSD1306_UpdateScreen (uint8_t);
+  STAT SSD1306_UpdateScreen (uint8_t);
 
   /**
    * @brief   SSD1306 Update text position
@@ -186,7 +173,7 @@
    *
    * @return  uint8_t
    */
-  uint8_t SSD1306_UpdatePosition (void);
+  STAT SSD1306_UpdatePosition (void);
 
   /**
    * @brief   SSD1306 Set position
@@ -205,7 +192,7 @@
    *
    * @return  uint8_t
    */
-  uint8_t SSD1306_DrawChar (char);
+  STAT SSD1306_DrawChar (char);
 
   /**
    * @brief   SSD1306 Draw string
@@ -224,7 +211,7 @@
    *
    * @return  uint8_t
    */
-  uint8_t SSD1306_DrawPixel (uint8_t, uint8_t);
+  STAT SSD1306_DrawPixel (uint8_t, uint8_t);
 
   /**
    * @brief   Draw line
@@ -236,6 +223,6 @@
    *
    * @return  uint8_t
    */
-  uint8_t SSD1306_DrawLine (uint8_t, uint8_t, uint8_t, uint8_t);
+  STAT SSD1306_DrawLine (uint8_t, uint8_t, uint8_t, uint8_t);
 
 #endif

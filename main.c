@@ -20,8 +20,15 @@
  */
 
 // include libraries
-#include "lib/ssd1306.h"
+#include "ssd1306.h"
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#define _delay_ms(a) Sleep(a)
+#else
 #include <util/delay.h>
+#endif
 
 /**
  * @desc    Main function
