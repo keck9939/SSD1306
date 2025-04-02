@@ -1,4 +1,8 @@
 # C Library for SSD1306 0.96" OLED display
+## Note
+This fork aims to make the original library a little more portable. It also includes an efficiency change.
+At the moment, it will build and run under Windows using an MCP2221 i2c interface. The next goal is to add STM32G4 i2c support. I have tried to retain the ability to support AVR, but the
+twi interface needs to be written and everything tested.
 
 ## SSD1306 Description
 Detailed information are described in [Datasheet SSD1306](https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf).
