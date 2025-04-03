@@ -237,10 +237,17 @@ STAT SSD1306_UpdatePosition(void)
 	return ST_OK;
 }
 
+/**
+ * @brief   SSD1306 Scroll Line - Scroll the screen up 1 line
+ *
+ * @param   void
+ *
+ * @return  void
+ */
 void SSD1306_ScrollLine()
 {
 	memcpy(cacheMemLcd, &cacheMemLcd[128], CACHE_SIZE_MEM - 128);
-	memset(&cacheMemLcd[CACHE_SIZE_MEM - 129], 0, 128);
+	memset(&cacheMemLcd[CACHE_SIZE_MEM - 128], 0, 128);
 }
 
 /**
@@ -259,7 +266,7 @@ STAT SSD1306_DrawChar(char character)
 	}
 
 #if defined _WIN32 || defined STM32G431xx
-	while (i < CHARS_COLS_LENGTH) {
+	while (i < CHARS_COLS_LENGTH && _counter < CACHE_SIZE_MEM) {
 		cacheMemLcd[_counter++] = FONTS[character - 32][i++];
 	}
 #else
@@ -270,7 +277,9 @@ STAT SSD1306_DrawChar(char character)
 #endif
 	_counter++;
 
-	return ST_OK;
+	if (_counter < CACHE_SIZE_MEM)
+		return ST_OK;
+	return ST_FAIL;
 }
 
 /**
@@ -280,7 +289,7 @@ STAT SSD1306_DrawChar(char character)
  *
  * @return  void
  */
-void SSD1306_DrawString(char* str)
+void SSD1306_DrawString(const char* str)
 {
 	int i = 0;
 	while (str[i] != '\0') {

@@ -200,7 +200,7 @@ STAT SSD1306_DrawChar(char);
  *
  * @return  void
  */
-void SSD1306_DrawString(char*);
+void SSD1306_DrawString(const char*);
 
 /**
  * @brief   Draw pixel
